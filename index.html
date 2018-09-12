@@ -1,0 +1,312 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+                    <h3>A case study in machine learning:<br>
+                    galaxy classification<br>
+                    and artificial redshifting</h3>
+                    Lucas Fowler<br>
+                    11th September 2018
+                    <table>
+                    <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    </tr>
+                    <tr>
+                    <td>
+                    <img class="plain" width="200" height="100" data-src="./ETH.image.imageformat.twocolumn.404647511.jpg" alt="ETH" border="0">
+                    </td>
+                    <td>
+                    <img class="plain" width="100" height="100" data-src="./bh-group.png" alt="ETH Black Hole Group">
+                    </td>
+                    <td>
+                    <img class="plain" width="200" height="100" data-src="./zhcs-small.png" alt="ETH Black Hole Group">
+                    </td>
+                    <td>
+                    <img class="plain" width="300" height="100" data-src="./uzh.logo-large.png" alt="ETH Black Hole Group">
+                    </td>
+                    </tr>
+                    </table>
+				</section>
+
+				<section>
+                    The Galaxy Zoo project used citizen scientists to classify over 600'000 galaxies<br>
+                    <img height="200" width="300" data-src="./galaxy-zoo.jpg" alt="Galaxy Zoo"><br>
+                    <img height="200" withd="200" data-src="./ExampleSpiral.png" alt="Spirals">
+                    <img height="200" withd="200" data-src="./EllipticalSample.jpeg" alt="Ellipticals">
+                    <br>primarily into spirals and ellipticals.<br>
+                    <small>Galaxy Zoo, Lintott, Schawinski, et. al. 2008</small>
+				</section>
+
+				<section>
+                    Simple Convolutional Net Suffices for GZ1
+						<aside class="notes">
+                    ML Classification of the GZ1 data do not require sophisticated nets to reproduce the citizen science results. Galaxy Zoo created a Kaggle Chalange won by Sander Dielemann.
+                    With the arrival of Tensor flow we were able to easily reproduce these results.
+                    </aside>
+                    <img data-src="./Krizhevski.png" alt="Lucasnet">
+                    <small>After Dieleman et. al. 2015</small>
+				</section>
+
+				<section>
+						<aside class="notes">
+                    However CS classifications are flawed because as redshift increases, the classification accuracy decreases.
+                    Bamford et. al was able to correct for these statistical errors.
+                    </aside>
+                    Galaxy Zoo Classification Accuracy Decreases with Redshift
+                    <img data-src="./BamfordCompare.png" alt="Bamford">
+                    <small>Bamford et. al. 2008</small>
+				</section>
+
+				<section>
+                    How can we use the high quality labels to classify better at higer z?
+						<aside class="notes">
+ 
+                    We wanted to use the classifications at low z which are more accurate and then degenerate the images to higher z and train on these to see if classifications are better
+                    </aside>
+				</section>
+
+				<section>
+                    Using Ferengi to increase redshift
+                    <table>
+                    <tr valign="middle">
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g-z0_02.png" alt="Ferengi">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g-z0_04.png" alt="Ferengi">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g-z0_06.png" alt="Ferengi">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g-z0_08.png" alt="Ferengi">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g-z0_10.png" alt="Ferengi">
+                    </td>
+                    </tr>
+                    </table>
+                    g-band images Ferengi redshifted <br>with z = 0.02, 0.04, 0.06, 0.08, 0.10 respectively
+                    <small>(With Dennis Turp, Sandro Ackermann, Nicole Widmer)</small>
+				</section>
+
+
+				<section>
+                    <h2>Process Pipeline</h2>
+					<img data-src="./FerengiPipeline.png" alt="Ferengi Pipeline">
+                    <small>Note: Train and Validation split not shown</small>
+				</section>
+
+				<section>
+                    <h2>Object Selection</h2>
+                    <table>
+                        <tr style="vertical-align: middle;">
+                          <td style="vertical-align: middle;">
+                          <img data-src="./absolute-magnitude.png" alt="Absolute Magnitude">
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <small>
+                               <table>
+                                  <tr>
+                                  <th>z-limit</th>  <th>M</th>         <th>objects</th>
+                                  </tr>
+                                  <tr>
+                                  <td>0.100</td>    <td>-20.545</td>    <td>10137</td>
+                                  </tr>
+                                  <tr>
+                                  <td>0.125</td>    <td>-21.066</td>    <td> 5219</td>
+                                  </tr>
+                                  <tr>
+                                  <td>0.150</td>    <td>-21.496</td>    <td> 2424</td>
+                                  </tr>
+                                  <tr>
+                                  <td>0.175</td>    <td>-21.864</td>    <td> 1010</td>
+                                  </tr>
+                                  <tr>
+                                  <td>0.200</td>    <td>-22.186</td>    <td>  382</td>
+                                  </tr>
+                               </table>
+                            </small>
+                          </td>
+                        </tr>
+                      </table>
+						<aside class="notes">
+A difference of 5 magnitudes corresponds to a ratio of 100 in their luminosities
+The Sun has absolute magnitude MV=+4
+Milky Way galaxy −20.8
+                        </aside>
+				</section>
+
+				<section>
+				<section>
+                    <h2>Some astro infos</h2>
+                    <ul>
+                        <li>Training on raw FITS images instead of jpeg increases information content
+                        <li>But asinh stretch still required to accentuate faint features (Lupton et. al. 2003)
+                        <li>u and z bands added little extra training content
+                        <li>Images were cropped and resized to all have the equivalent angular diameter distance to compare equal sizes 
+                    </ul>
+						<aside class="notes">
+We also introduce the use of an asinh stretch, which allows us to show faint objects
+while simultaneously preserving the structure of brighter objects in the field, such as
+the spiral arms of large galaxies.
+                        </aside>
+				</section>
+                    
+				<section>
+                    <table>
+                    <tr valign="middle">
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-u.png" alt="u">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-g.png" alt="g">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-r.png" alt="r">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-i.png" alt="i">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-z.png" alt="z">
+                    </td>
+                    </tr>
+                    <tr valign="middle">
+                    <td style="vertical-align: middle;">
+u
+                    </td>
+                    <td style="vertical-align: middle;">
+g
+                    </td>
+                    <td style="vertical-align: middle;">
+r
+                    </td>
+                    <td style="vertical-align: middle;">
+i
+                    </td>
+                    <td style="vertical-align: middle;">
+z
+                    </td>
+                    </tr>
+                    </table>
+                    <table>
+                    <tr valign="middle">
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361.png" alt="u">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-normalised.png" alt="g">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-normalised-asinh.png" alt="r">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img style="background:none; border:1px solid black; box-shadow:none;" data-src="./587728932411146361-normalised-asinh-zoom-0.png" alt="i">
+                    </td>
+                    </tr>
+                    <tr valign="middle">
+                    <td style="vertical-align: middle;">
+jpeg
+                    </td>
+                    <td style="vertical-align: middle;">
+normalised
+                    </td>
+                    <td style="vertical-align: middle;">
+asinh
+                    </td>
+                    <td style="vertical-align: middle;">
+zoomed
+                    </td>
+                    </tr>
+                    </table>
+				</section>
+            </section>
+				<section>
+                    <h2>ML Infos</h2>
+                    <ul>
+                        <li>Resnet 50 trains with approx 36000 raw images
+                        <li>Duplication of training set by four rotations of 90 degrees
+                        <li>Brightness and contrast make little difference
+                        <li>Training took about 20 hours on 2 Titan GPUs at 50% each
+                    </ul>
+				</section>
+
+				<section>
+                    <section>
+                    <h2>Results</h2>
+                        <img style="background:none; border:0px solid black; box-shadow:none;" data-src="./Results.png" alt="u">
+                    </section>
+                    <section>
+                        Predicted spiral, voted elliptical
+                        <img style="background:none; border:0px solid black; box-shadow:none;" data-src="./pcs_vel.png" alt="u">
+                    </section>
+                    <section>
+                        Predicted other, voted spiral
+                        <img style="background:none; border:0px solid black; box-shadow:none;" data-src="./pot_vcs.png" alt="u">
+                    </section>
+                    <section>
+                        Predicted other, voted elliptical
+                        <img style="background:none; border:0px solid black; box-shadow:none;" data-src="./pot_vel.png" alt="u">
+                    </section>
+                </section>
+
+				<section>
+                    <h2>In conclusion</h2>
+                    <ul>
+                        <li>Newer surveys will bring larger samples
+                        <li>PanSTARRS, LSST
+                        <li>But we will need to develop unsupervised learning models
+                        <li>Train using physical simulations
+                    </ul>
+               <br><br> 
+                I want to continue this as my master thesis, but I need a supervisor.
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				history: true,
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
